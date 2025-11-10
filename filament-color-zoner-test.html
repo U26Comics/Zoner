@@ -216,15 +216,6 @@
 
         <div class="card group">
           <div class="btns" style="align-items:center;">
-            <input type="color" id="globalColor" value="#ff0000"
-                   title="Pick a colour"
-                   style="width:40px;height:40px;padding:0;border:none;background:transparent;cursor:pointer;border-radius:6px;">
-
-            <button class="zoneBtn" data-zone="1">Zone 1</button>
-            <button class="zoneBtn" data-zone="2">Zone 2</button>
-            <button class="zoneBtn" data-zone="3">Zone 3</button>
-            <button class="zoneBtn" data-zone="4">Zone 4</button>
-
             <div style="flex:1"></div>
 
             <button class="primary" id="copyBtn">Copy Color Codes</button>
@@ -424,15 +415,15 @@
 
   /* ---------- Render CMYK output (one line per zone) ---------- */
   function renderOutput(){
-    const out = document.getElementById('outputBox');
-    if(!out) return;
-    const lines = state.zones.map(z=>{
-      const rgb = parseColorToRgb(z.hex);
-      const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
-      return `Zone ${z.id}: C${cmyk.c} M${cmyk.m} Y${cmyk.y} K${cmyk.k}`;
-    });
-    out.textContent = lines.join('\n');
-  }
+  const out = document.getElementById('outputBox');
+  if(!out) return;
+
+  const lines = state.zones.map(z=>{
+    return `Zone ${z.id}: ${z.hex.toUpperCase()}`;
+  });
+
+  out.textContent = lines.join('\n');
+}
 
   /* ---------- Apply global color to zone index ---------- */
   function applyColour(zoneIndex, hex){
@@ -466,27 +457,10 @@
     buildPickers();
     renderOutput();
 
-    // global color wheel -> applies to chosen zone buttons
-    const globalColor = document.getElementById('globalColor');
-    document.querySelectorAll('.zoneBtn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const idx = Number(btn.dataset.zone) - 1;
-        const hex = (globalColor && globalColor.value) ? globalColor.value : '#ff0000';
-        applyColour(idx, hex);
-      });
-    });
-
     // copy button copies CMYK block
     const copyBtn = document.getElementById('copyBtn');
     if(copyBtn) copyBtn.addEventListener('click', copyToClipboard);
 
-    // If you want keyboard-access: pressing numbers 1-4 applies global color to that zone
-    window.addEventListener('keydown', (e)=>{
-      if(e.key >= '1' && e.key <= '4'){
-        const idx = Number(e.key) - 1;
-        if(state.zones[idx]) applyColour(idx, globalColor.value);
-      }
-    });
   }
 
   window.addEventListener('DOMContentLoaded', init);
