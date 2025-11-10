@@ -395,7 +395,10 @@
       input.addEventListener('input', ()=>{
         z.hex = input.value;
         hexSpan.textContent = z.hex;
-        z.els.forEach(el => el.setAttribute('fill', z.hex));
+        z.els.forEach(el => {
+  el.setAttribute('fill', z.hex);
+  if(el.style) el.style.fill = z.hex;
+});
         renderOutput();
       });
 
