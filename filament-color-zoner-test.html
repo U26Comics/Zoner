@@ -1,0 +1,681 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filament Color Zoner</title>
+  <style>
+    :root {{
+      --bg: #0b0b0c;
+      --card: #141418;
+      --muted: #2a2a31;
+      --text: #e9e9f0;
+      --sub: #b8b8c8;
+      --accent: #6ea8fe;
+      --accent-2: #8ef0c6;
+    }}
+
+    html, body {{
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      height: 100%;
+      overflow: hidden;
+    }}
+
+    .wrapper {{
+      height: 600px;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+      padding: 12px;
+    }}
+
+    .header {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }}
+    .title {{
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }}
+    .badge {{
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+    }}
+
+    .content {{
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 12px;
+      min-height: 0;
+    }}
+    @media (max-width: 720px) {{
+      .content {{
+        grid-template-columns: 1fr;
+      }}
+    }}
+
+    .card {{
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      min-height: 0;
+    }}
+
+    .preview {{
+      display: grid;
+      place-items: center;
+      height: 100%;
+      overflow: auto;
+    }}
+    .preview svg {{
+      max-width: 100%;
+      height: auto;
+      background: #0e0e12;
+      border-radius: 12px;
+    }}
+
+    .controls {{
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      min-height: 0;
+    }}
+
+    .row {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }}
+    @media (max-width: 720px) {{
+      .row {{
+        grid-template-columns: 1fr;
+      }}
+    }}
+
+    .group {{
+      display: grid;
+      gap: 10px;
+    }}
+
+    .picker {{
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid var(--muted);
+    }}
+
+    .picker input[type="color"] {{
+      width: 40px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+    }}
+
+    .picker label {{
+      font-size: 12px;
+      color: var(--sub);
+    }}
+
+    .small {{
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.3;
+    }}
+
+    .btns {{
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }}
+    button {{
+      background: #1f2430;
+      color: var(--text);
+      border: 1px solid #2f3545;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }}
+    button.primary {{
+      background: linear-gradient(135deg, #3c79ff, #28ddb2);
+      border: none;
+      color: #0b0b0c;
+    }}
+    button:hover {{
+      filter: brightness(1.08);
+    }}
+
+    .output {{
+      background: var(--card);
+      border: 1px solid var(--muted);
+      border-radius: 12px;
+      padding: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      color: #e8f0ff;
+      max-height: 120px;
+      overflow: auto;
+    }}
+
+    .footer {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }}
+
+    .toast {{
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      background: #1c693f;
+      color: #ecfff4;
+      padding: 10px 12px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 220ms ease;
+      pointer-events: none;
+      z-index: 9999;
+    }}
+    .toast.show {{
+      opacity: 1;
+      transform: translateY(0);
+    }}
+
+    .format-toggle {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }}
+    .format-toggle select {{
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--muted);
+      padding: 6px 8px;
+      border-radius: 8px;
+    }}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="title">Filament Preview <span class="badge">CMYK Zoner</span></div>
+      <div class="small">Inline SVG • 4 Zones • Copy CMYK</div>
+    </div>
+
+    <div class="content">
+      <div class="card preview" id="previewCard">
+        <div id="svgHost"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="Life Counter.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     inkscape:zoom="2"
+     inkscape:cx="388"
+     inkscape:cy="567.75"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" /><defs
+     id="defs1"><inkscape:path-effect
+       effect="spiro"
+       id="path-effect12"
+       is_visible="true"
+       lpeversion="1" /><inkscape:path-effect
+       effect="spiro"
+       id="path-effect11"
+       is_visible="true"
+       lpeversion="1" /><marker
+       id="DistanceX"
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       style="overflow:visible"><path
+         d="M 3,-3 L -3,3 M 0,-5 L  0,5"
+         style="stroke:#000000; stroke-width:0.5"
+         id="path1" /></marker><pattern
+       id="Hatch"
+       patternUnits="userSpaceOnUse"
+       width="8"
+       height="8"
+       x="0"
+       y="0"><path
+         d="M8 4 l-4,4"
+         stroke="#000000"
+         stroke-width="0.25"
+         linecap="square"
+         id="path2" /><path
+         d="M6 2 l-4,4"
+         stroke="#000000"
+         stroke-width="0.25"
+         linecap="square"
+         id="path3" /><path
+         d="M4 0 l-4,4"
+         stroke="#000000"
+         stroke-width="0.25"
+         linecap="square"
+         id="path4" /></pattern><symbol
+       id="*Model_Space" /><symbol
+       id="*Paper_Space" /><symbol
+       id="*Paper_Space0" /></defs><g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"><use
+       x="0"
+       y="0"
+       xlink:href="#g10"
+       id="use11"
+       transform="rotate(180,98.975731,141.43683)" /><g
+       id="g10"><path
+         id="path224"
+         style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:0.165;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 65.958379,126.50639 0.40005,-0.21166 0.40005,0.21166 0.100012,0.10584 0.100013,-0.10584 2.500048,-1.07685 v -0.13229 h 3.99997 v 0.13229 l 2.499784,1.07685 0.100012,0.10584 0.100013,-0.10584 0.40005,-0.21166 0.40005,0.21166 v 29.86088 l -0.40005,0.21166 -0.40005,-0.21166 -0.100013,-0.10584 -0.100012,0.10584 -2.499784,1.07685 v 0.13229 h -3.99997 v -0.13229 l -2.500048,-1.07685 -0.100013,-0.10584 -0.100012,0.10584 -0.40005,0.21166 -0.40005,-0.21166 z"
+         sodipodi:nodetypes="ccccccccccccccccccccccccccccc" /><path
+         id="path134"
+         style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.165;stroke-linecap:round;stroke-opacity:1;stroke-dasharray:none"
+         d="m 69.458552,143.02962 1.599935,1.90765 h 0.799835 l 2.900098,-3.10092 v -0.79904 l -2.900098,-3.10092 h -0.799835 l -1.599935,1.90765 z"
+         sodipodi:nodetypes="ccccccccc" /><g
+         id="g7"
+         transform="matrix(0.26458333,0,0,0.26458333,126.48843,-155.56325)"><path
+           id="path174"
+           style="fill:#00ffff;fill-opacity:1;stroke:#020202;stroke-linecap:round;stroke-opacity:1;stroke-width:0.62362206;stroke-dasharray:none"
+           d="m -190.98,1066.09 -9.448,-4.07 v 45.06 l 9.448,-2 z m -34.015,0 v 38.99 l 9.449,2 v -45.06 z m 0,112.86 9.449,4.07 v -45.06 l -9.449,2 z m 34.015,0 v -38.99 l -9.448,-2 v 45.06 z"
+           sodipodi:nodetypes="cccccccccccccccccccc" /></g></g><text
+       xml:space="preserve"
+       style="font-weight:900;font-size:5.64444px;font-family:Arial;-inkscape-font-specification:'Arial, Heavy';text-align:center;letter-spacing:0.489479px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:0.264583;stroke-linejoin:round;paint-order:markers fill stroke"
+       x="79.53405"
+       y="141.02946"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         x="79.53405"
+         y="141.02946"
+         style="stroke-width:0.264583"></tspan></text><g
+       id="g14"><g
+         id="g11"
+         style="stroke:#000000;stroke-opacity:1"><g
+           id="g12"><g
+             id="g9-5"
+             transform="matrix(0.26458333,0,0,0.26458333,115.47859,-155.56325)"
+             style="stroke:#000000;stroke-opacity:1"><path
+               id="path221-1"
+               style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:0.245669;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+               d="m -145.606,1066.19 11.357,-3.19 h 18.898 l 11.357,3.19 v 112.66 l -11.357,3.19 h -18.898 l -11.357,-3.19 z"
+               sodipodi:nodetypes="ccccccccc" /><path
+               d="m -144.83099,1065.98 0.755,-0.22 v 113.52 l -0.755,-0.22 z m 39.307,113.3 v -113.52 l 0.755,0.22 v 113.08 z"
+               style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.245669;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+               id="path1-8-7" /></g><path
+             id="path237"
+             style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-opacity:1"
+             d="m 77.358588,129.26468 2.600007,-0.56886 m 0,0 h 4.99999 m 0,0 2.600007,0.56886 m -10.200004,7.80785 2.600007,-0.18785 m 0,0 h 4.99999 m 0,0 2.600007,0.18785 m -2.600007,9.54352 2.600007,-0.26458 m -7.599997,0.26458 h 4.99999 m -7.599997,-0.26458 2.600007,0.26458 m -2.600007,6.94532 2.600007,0.61647 m 0,0 h 4.99999 m 0,0 2.600007,-0.61647" /></g><path
+           style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:0.065;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           d="M 84.958636,157.18515 V 125.68883"
+           id="path11"
+           inkscape:path-effect="#path-effect11"
+           inkscape:original-d="m 84.958636,157.18515 c 0,-10.49899 0,-20.99765 0,-31.49632" /><path
+           style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:0.0649999;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+           d="m 79.958543,125.68883 v 31.496"
+           id="path12"
+           inkscape:path-effect="#path-effect12"
+           inkscape:original-d="m 79.958543,125.68883 0,31.496"
+           sodipodi:nodetypes="cc" /></g><use
+         x="0"
+         y="0"
+         xlink:href="#g11"
+         id="use12"
+         transform="translate(11.009842)" /><use
+         x="0"
+         y="0"
+         xlink:href="#g11"
+         id="use13"
+         transform="translate(22.019684)" /><use
+         x="0"
+         y="0"
+         xlink:href="#g11"
+         id="use14"
+         transform="translate(33.029526)" /></g><g
+       id="g6"
+       transform="matrix(0.26458333,0,0,0.26458333,126.48843,-156.2886)"
+       style="stroke-width:0.62362206;stroke-dasharray:none;fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-opacity:1"><text
+         xml:space="preserve"
+         style="font-weight:900;font-size:26.9956px;font-family:Arial;-inkscape-font-specification:'Arial, Heavy';text-align:center;letter-spacing:2.34103px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#ffff00;stroke-width:0.62362206;stroke-linejoin:round;paint-order:markers fill stroke;stroke-dasharray:none;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+         x="-166.39748"
+         y="1135.0883"
+         id="text3"><tspan
+           sodipodi:role="line"
+           id="tspan3"
+           x="-165.22696"
+           y="1135.0883"
+           style="stroke-width:0.62362206;stroke-dasharray:none;fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-opacity:1">1</tspan></text><text
+         xml:space="preserve"
+         style="font-weight:900;font-size:26.9956px;font-family:Arial;-inkscape-font-specification:'Arial, Heavy';text-align:center;letter-spacing:2.34103px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#ffff00;stroke-width:0.62362206;stroke-linejoin:round;paint-order:markers fill stroke;stroke-dasharray:none;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+         x="-125.00156"
+         y="1135.0883"
+         id="text4"><tspan
+           sodipodi:role="line"
+           id="tspan4"
+           x="-123.83104"
+           y="1135.0883"
+           style="stroke-width:0.62362206;stroke-dasharray:none;fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-opacity:1">2</tspan></text><text
+         xml:space="preserve"
+         style="font-weight:900;font-size:26.5504px;font-family:Arial;-inkscape-font-specification:'Arial, Heavy';text-align:center;letter-spacing:2.30242px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#ffff00;stroke-width:0.62362206;stroke-linejoin:round;paint-order:markers fill stroke;stroke-dasharray:none;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+         x="-82.253403"
+         y="1134.7642"
+         id="text5"><tspan
+           sodipodi:role="line"
+           id="tspan5"
+           x="-81.102196"
+           y="1134.7642"
+           style="stroke-width:0.62362206;stroke-dasharray:none;fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-opacity:1">3</tspan></text><text
+         xml:space="preserve"
+         style="font-weight:900;font-size:26.9956px;font-family:Arial;-inkscape-font-specification:'Arial, Heavy';text-align:center;letter-spacing:2.34103px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#ffff00;stroke-width:0.62362206;stroke-linejoin:round;paint-order:markers fill stroke;stroke-dasharray:none;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+         x="-40.412746"
+         y="1135.0883"
+         id="text6"><tspan
+           sodipodi:role="line"
+           id="tspan6"
+           x="-39.242233"
+           y="1135.0883"
+           style="stroke-width:0.62362206;stroke-dasharray:none;fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-opacity:1">4</tspan></text></g></g></svg></div>
+      </div>
+
+      <div class="controls">
+        <div class="card">
+          <div class="row" id="pickersRow">
+          </div>
+          <div class="small">Tip: This tool auto-detects unique non-black fill colors and maps them to Zone 1–4. Black strokes/line art remain unchanged.</div>
+        </div>
+
+        <div class="card group">
+          <div class="btns">
+            <button id="randomizeBtn">Randomize</button>
+            <div class="format-toggle">
+              <label for="formatSel" class="small">Output:</label>
+              <select id="formatSel" title="Choose copy format">
+                <option value="compact">Compact (Z1:C…M…Y…K…)</option>
+                <option value="multiline">Multiline</option>
+              </select>
+            </div>
+            <button class="primary" id="copyBtn">Copy Color Codes</button>
+          </div>
+          <div class="output" id="outputBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer small">
+      <div>Carrd-ready • 600px iframe • No downloads</div>
+      <div>v1.0</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard</div>
+
+  <script>
+    function clamp01(n) {{
+      return Math.min(1, Math.max(0, n));
+    }}
+
+    function hexToRgb(hex) {{
+      if (!hex) return null;
+      hex = hex.toLowerCase();
+      if (hex.startsWith('#')) hex = hex.slice(1);
+      if (hex.length === 3) {{
+        hex = hex.split('').map(c => c + c).join('');
+      }}
+      if (hex.length !== 6) return null;
+      const num = parseInt(hex, 16);
+      return {{
+        r: (num >> 16) & 255,
+        g: (num >> 8) & 255,
+        b: num & 255
+      }};
+    }}
+
+    function parseColorToRgb(str) {{
+      if (!str) return null;
+      str = String(str).trim();
+      if (str === 'none') return null;
+
+      if (str.startsWith('#')) {{
+        return hexToRgb(str);
+      }}
+      if (str.startsWith('rgb')) {{
+        const m = str.match(/rgba?\(([^)]+)\)/i);
+        if (m) {{
+          const parts = m[1].split(',').map(s => parseFloat(s.trim()));
+          return {{ r: parts[0], g: parts[1], b: parts[2] }};
+        }}
+      }}
+      try {{
+        const ctx = document.createElement('canvas').getContext('2d');
+        ctx.fillStyle = str;
+        const c = ctx.fillStyle;
+        if (c.startsWith('#')) return hexToRgb(c);
+      }} catch (e) {{}}
+      return null;
+    }}
+
+    function rgbToCmyk(r, g, b) {{
+      const rr = r / 255, gg = g / 255, bb = b / 255;
+      const k = 1 - Math.max(rr, gg, bb);
+      if (k >= 1 - 1e-8) {{
+        return {{ c: 0, m: 0, y: 0, k: 100 }};
+      }}
+      const c = (1 - rr - k) / (1 - k);
+      const m = (1 - gg - k) / (1 - k);
+      const y = (1 - bb - k) / (1 - k);
+      return {{
+        c: Math.round(c * 100),
+        m: Math.round(m * 100),
+        y: Math.round(y * 100),
+        k: Math.round(k * 100)
+      }};
+    }}
+
+    function rgbToHex(r, g, b) {{
+      const toHex = v => v.toString(16).padStart(2, '0');
+      return '#' + toHex(r) + toHex(g) + toHex(b);
+    }}
+
+    function isNearBlack(rgb) {{
+      if (!rgb) return false;
+      return rgb.r < 15 && rgb.g < 15 && rgb.b < 15;
+    }}
+
+    function uniqueKeyFromColorStr(fillStr) {{
+      const rgb = parseColorToRgb(fillStr);
+      if (!rgb) return null;
+      return rgbToHex(Math.round(rgb.r), Math.round(rgb.g), Math.round(rgb.b)).toLowerCase();
+    }}
+
+    const state = {{
+      zones: [],
+      pickers: [],
+      format: 'compact'
+    }};
+
+    function detectZones() {{
+      const host = document.getElementById('svgHost');
+      const svg = host.querySelector('svg');
+      if (!svg) return;
+
+      const all = svg.querySelectorAll('*');
+      const colorMap = new Map();
+
+      all.forEach(el => {{
+        const fill = el.getAttribute('fill');
+        if (!fill || fill === 'none') return;
+        const rgb = parseColorToRgb(fill);
+        if (!rgb) return;
+        if (isNearBlack(rgb)) return;
+        const key = rgbToHex(Math.round(rgb.r), Math.round(rgb.g), Math.round(rgb.b));
+        if (!colorMap.has(key)) colorMap.set(key, []);
+        colorMap.get(key).push(el);
+      }});
+
+      const entries = Array.from(colorMap.entries()).slice(0, 4);
+
+      state.zones = entries.map(([hex, elements], idx) => ({
+        key: hex,
+        hex,
+        elements,
+        zoneId: idx + 1
+      }));
+
+      state.zones.forEach(z => {{
+        z.elements.forEach(el => el.setAttribute('data-zone', z.zoneId));
+      }});
+    }}
+
+    function buildPickers() {{
+      const row = document.getElementById('pickersRow');
+      row.innerHTML = '';
+      state.pickers = [];
+
+      state.zones.forEach(z => {{
+        const wrap = document.createElement('div');
+        wrap.className = 'picker';
+
+        const input = document.createElement('input');
+        input.type = 'color';
+        input.value = z.hex;
+        input.setAttribute('aria-label', 'Zone ' + z.zoneId + ' color');
+
+        const label = document.createElement('label');
+        label.textContent = 'Zone ' + z.zoneId;
+
+        wrap.appendChild(input);
+        wrap.appendChild(label);
+        row.appendChild(wrap);
+
+        input.addEventListener('input', () => {{
+          z.hex = input.value;
+          z.elements.forEach(el => el.setAttribute('fill', z.hex));
+          renderOutput();
+        }});
+
+        state.pickers.push(input);
+      }});
+
+      const placeholders = Math.max(0, 4 - state.zones.length);
+      for (let i = 0; i < placeholders; i++) {{
+        const ghost = document.createElement('div');
+        ghost.className = 'picker';
+        ghost.style.opacity = '0.5';
+        ghost.innerHTML = '<div style="width:40px;height:32px;border:1px dashed #3a3a46;border-radius:6px;"></div><label>Unused</label>';
+        row.appendChild(ghost);
+      }}
+    }}
+
+    function renderOutput() {{
+      const lines = state.zones.map(z => {{
+        const rgb = parseColorToRgb(z.hex);
+        const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+        const compact = `Z${{z.zoneId}}:C${{cmyk.c}}M${{cmyk.m}}Y${{cmyk.y}}K${{cmyk.k}}`;
+        const multiline = `Zone ${{z.zoneId}}: C${{cmyk.c}} M${{cmyk.m}} Y${{cmyk.y}} K${{cmyk.k}}`;
+        return {{ compact, multiline }};
+      }});
+
+      let text;
+      if (state.format === 'compact') {{
+        text = lines.map(l => l.compact).join(' | ');
+      }} else {{
+        text = lines.map(l => l.multiline).join('\n');
+      }}
+      document.getElementById('outputBox').textContent = text;
+    }}
+
+    function randomHex() {{
+      const r = Math.floor(40 + Math.random() * 215);
+      const g = Math.floor(40 + Math.random() * 215);
+      const b = Math.floor(40 + Math.random() * 215);
+      return rgbToHex(r, g, b);
+    }}
+
+    function randomize() {{
+      state.zones.forEach(z => {{
+        z.hex = randomHex();
+        z.elements.forEach(el => el.setAttribute('fill', z.hex));
+      }});
+      state.pickers.forEach((inp, i) => {{
+        if (state.zones[i]) inp.value = state.zones[i].hex;
+      }});
+      renderOutput();
+    }}
+
+    function copyToClipboard() {{
+      const text = document.getElementById('outputBox').textContent;
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard')).catch(() => showToast('Copy failed'));
+    }}
+
+    function showToast(msg) {{
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1400);
+    }}
+
+    function init() {{
+      detectZones();
+      buildPickers();
+      renderOutput();
+
+      document.getElementById('randomizeBtn').addEventListener('click', randomize);
+      document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+      document.getElementById('formatSel').addEventListener('change', (e) => {{
+        state.format = e.target.value;
+        renderOutput();
+      }});
+    }}
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
