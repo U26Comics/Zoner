@@ -17,10 +17,9 @@
     html,body{
       margin:0;padding:0;background:var(--bg);color:var(--text);
       font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      height:100%; /* let wrapper control internal layout */
+      height:100%;
     }
 
-    /* container */
     .wrapper{
       max-width:1200px;margin:18px auto;height:600px;box-sizing:border-box;display:grid;
       grid-template-rows:auto 1fr auto;gap:12px;padding:12px;
@@ -33,7 +32,6 @@
       -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;
     }
 
-    /* content area: preview on left, controls on right, but preview content centered */
     .content{display:grid;grid-template-columns:1fr 360px;gap:14px;align-items:start;min-height:0;}
     @media(max-width:920px){ .content{grid-template-columns:1fr; } }
 
@@ -46,7 +44,6 @@
     .preview{
       display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;
     }
-    /* Ensure SVG centers nicely and is responsive */
     #svgHost, #svgHost svg { width:100%; height:auto; display:block; margin:0 auto; max-width:760px; }
     #svgHost svg { background:#0e0e12; border-radius:12px; }
 
@@ -102,15 +99,13 @@
   <div class="wrapper">
     <div class="header">
       <div class="title">Filament Preview <span class="badge">CMYK Zoner</span></div>
-      <div class="small">Inline SVG • up to 4 Zones • Copy CMYK</div>
     </div>
 
     <div class="content">
       <!-- PREVIEW -->
       <div class="card preview" id="previewCard">
         <div id="svgHost">
-<!-- NOTE: removed the XML declaration and the duplicate nested <svg>.
-     Keep only one <svg> element here. The original Inkscape content follows. -->
+          <!-- SVG INLINE HERE -->
 <svg
    width="210mm"
    height="297mm"
@@ -208,7 +203,7 @@
     </g>
   </g>
 </svg>
-        </div>
+         </div>
       </div>
 
       <!-- CONTROLS -->
@@ -217,20 +212,14 @@
           <div class="row" id="pickersRow">
             <!-- per-zone colour pickers are injected here by JS -->
           </div>
-          <div class="small" style="margin-top:8px;">
-            Tip: This tool auto-detects unique non-black fill colors and maps them to Zone 1-4.
-            Black strokes/line art remain unchanged.
-          </div>
         </div>
 
         <div class="card group">
           <div class="btns" style="align-items:center;">
-            <!-- 🎨 Global colour wheel (still available) -->
             <input type="color" id="globalColor" value="#ff0000"
                    title="Pick a colour"
                    style="width:40px;height:40px;padding:0;border:none;background:transparent;cursor:pointer;border-radius:6px;">
 
-            <!-- 🟢 Four per-zone buttons (applies global wheel to that zone) -->
             <button class="zoneBtn" data-zone="1">Zone 1</button>
             <button class="zoneBtn" data-zone="2">Zone 2</button>
             <button class="zoneBtn" data-zone="3">Zone 3</button>
@@ -247,7 +236,6 @@
     </div> <!-- end .content -->
 
     <div class="footer small">
-      <div>Carrd-ready • 600px iframe • No downloads</div>
       <div>v1.0</div>
     </div>
   </div> <!-- end .wrapper -->
