@@ -20,11 +20,13 @@
       height:100%;
     }
 
+    /* --------------------------------------------------------------
+       Layout – a single column on mobile, two‑column on wider screens
+       -------------------------------------------------------------- */
     .wrapper{
-      max-width:1200px;margin:18px auto;height:600px;box-sizing:border-box;display:grid;
-      grid-template-rows:auto 1fr auto;gap:12px;padding:12px;
+      max-width:1200px;margin:18px auto;height:auto;box-sizing:border-box;
+      display:grid;grid-template-rows:auto 1fr auto;gap:12px;padding:12px;
     }
-
     .header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
     .title{font-weight:700;font-size:16px;letter-spacing:.2px;}
     .badge{
@@ -32,8 +34,16 @@
       -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;
     }
 
-    .content{display:grid;grid-template-columns:1fr 360px;gap:14px;align-items:start;min-height:0;}
-    @media(max-width:920px){ .content{grid-template-columns:1fr; } }
+    /* --------------------------------------------------------------
+       Content – preview (SVG) on the left, controls on the right.
+       On screens ≤ 920 px the layout collapses to a single column.
+       -------------------------------------------------------------- */
+    .content{
+      display:grid;
+      grid-template-columns:1fr 360px;   /* preview | controls */
+      gap:14px;align-items:start;min-height:0;
+    }
+    @media(max-width:920px){ .content{grid-template-columns:1fr;} }
 
     .card{
       background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
@@ -41,30 +51,48 @@
       box-shadow:0 8px 24px rgba(0,0,0,.35);min-height:0;
     }
 
+    /* --------------------------------------------------------------
+       SVG preview – keep it responsive and never larger than the
+       viewport width on mobile.
+       -------------------------------------------------------------- */
     .preview{
-      display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:12px;overflow:auto;padding:12px;
     }
-    #svgHost, #svgHost svg { width:100%; height:auto; display:block; margin:0 auto; max-width:760px; }
-    #svgHost svg { background:#0e0e12; border-radius:12px; }
+    #svgHost, #svgHost svg{
+      width:100%;height:auto;max-width:560px;   /* <-- mobile‑friendly max width */
+      display:block;margin:0 auto;
+    }
+    #svgHost svg{
+      background:#0e0e12;border-radius:12px;
+    }
 
-    .controls{display:grid;grid-auto-rows:auto;gap:12px;}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    @media(max-width:720px){.row{grid-template-columns:1fr;}}
-
-    .group{display:grid;gap:10px;}
-
+    /* --------------------------------------------------------------
+       Per‑zone colour pickers (now inside .preview, underneath SVG)
+       -------------------------------------------------------------- */
     .picker{
-      display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--card);border:1px solid var(--muted);
+      display:flex;align-items:center;gap:10px;padding:10px;
+      border-radius:10px;background:var(--card);border:1px solid var(--muted);
     }
     .picker input[type="color"]{
-      width:40px;height:40px;border:1px solid rgba(255,255,255,.03);border-radius:8px;padding:0;background:transparent;cursor:pointer;
+      width:40px;height:40px;border:1px solid rgba(255,255,255,.03);
+      border-radius:8px;padding:0;background:transparent;cursor:pointer;
     }
     .picker label{font-size:13px;color:var(--sub);min-width:56px;}
-    .picker .hex { font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Courier New",monospace;color:#e8f0ff;font-size:12px; }
+    .picker .hex{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Courier New",monospace;
+      color:#e8f0ff;font-size:12px;
+    }
+    .picker .copyTiny{
+      background:transparent;border:1px solid rgba(255,255,255,.06);
+      padding:6px;border-radius:8px;color:var(--sub);cursor:pointer;
+    }
 
     .small{font-size:12px;color:var(--sub);line-height:1.3;}
 
-    .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .btns{
+      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+    }
     button{
       background:#1f2430;color:var(--text);border:1px solid #2f3545;
       padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;
@@ -89,10 +117,6 @@
       pointer-events:none;z-index:9999;
     }
     .toast.show{opacity:1;transform:translateY(0);}
-
-    .copyTiny{
-      background:transparent;border:1px solid rgba(255,255,255,.06);padding:6px;border-radius:8px;color:var(--sub);cursor:pointer;
-    }
   </style>
 </head>
 <body>
@@ -102,24 +126,24 @@
     </div>
 
     <div class="content">
-      <!-- PREVIEW -->
+      <!-- ====================== PREVIEW CARD ====================== -->
       <div class="card preview" id="previewCard">
         <div id="svgHost">
-          <!-- SVG INLINE HERE -->
-<svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
-   version="1.1"
-   id="svg1"
-   xml:space="preserve"
-   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
-   sodipodi:docname="Life Counter.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
+          <!-- ==== INSERT YOUR ORIGINAL SVG HERE ==== -->
+          <svg
+             width="210mm"
+             height="297mm"
+             viewBox="0 0 210 297"
+             version="1.1"
+             id="svg1"
+             xml:space="preserve"
+             inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+             sodipodi:docname="Life Counter.svg"
+             xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+             xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xmlns="http://www.w3.org/2000/svg"
+             xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
      id="namedview1"
      pagecolor="#505050"
@@ -206,32 +230,25 @@
          </div>
       </div>
 
-      <!-- CONTROLS -->
-      <div class="controls">
-        <div class="card">
-          <div class="row" id="pickersRow">
-            <!-- per-zone colour pickers are injected here by JS -->
-          </div>
+        <!-- ==== PER‑ZONE PICKERS (will be filled by JS) ==== -->
+        <div id="pickersRow"></div>
+      </div>
+
+      <!-- ====================== CONTROLS CARD ====================== -->
+      <div class="card group">
+        <div class="btns" style="align-items:center;">
+          <button class="primary" id="copyBtn">Copy Color Codes</button>
         </div>
 
-        <div class="card group">
-          <div class="btns" style="align-items:center;">
-            <div style="flex:1"></div>
-
-            <button class="primary" id="copyBtn">Copy Color Codes</button>
-          </div>
-
-          <div class="output" id="outputBox" style="margin-top:12px;"></div>
-        </div>
+        <div class="output" id="outputBox" style="margin-top:12px;"></div>
       </div>
     </div> <!-- end .content -->
 
-    <div class="footer small">
-      <div>v1.0</div>
-    </div>
+    <div class="footer small"><div>v1.0</div></div>
   </div> <!-- end .wrapper -->
 
   <div class="toast" id="toast">Copied to clipboard</div>
+
 
   <script>
   /* ---------- Utility Functions ---------- */
@@ -249,22 +266,17 @@
     str = String(str).trim();
     if(str === 'none') return null;
     if(str.startsWith('#')) return hexToRgb(str);
-
-    // rgb / rgba
     const m = str.match(/rgba?\(([^)]+)\)/i);
     if(m){
       const parts = m[1].split(',').map(s=>parseFloat(s.trim()));
       if(parts.length >= 3) return { r: parts[0], g: parts[1], b: parts[2] };
     }
-
-    // fallback: canvas resolve (named colors)
-    try {
+    try{
       const ctx = document.createElement('canvas').getContext('2d');
       ctx.fillStyle = str;
       const resolved = ctx.fillStyle;
-      if(typeof resolved === 'string' && resolved.startsWith('#')) return hexToRgb(resolved);
-    } catch(e){}
-
+      if(resolved && resolved.startsWith('#')) return hexToRgb(resolved);
+    }catch(e){}
     return null;
   }
 
@@ -293,9 +305,9 @@
   }
 
   /* ---------- App State ---------- */
-  const state = { zones: [] }; // { id, hex, els, pickerEl, copyBtnEl }
+  const state = { zones: [] }; // each zone: {id, hex, els, pickerEl}
 
-  /* ---------- Detect up to 4 unique fill colours (ignoring near-black) ---------- */
+  /* ---------- Detect up to 4 unique fill colours (ignoring near‑black) ---------- */
   function detectZones(){
     const host = document.getElementById('svgHost');
     if(!host) return;
@@ -304,19 +316,17 @@
 
     const map = new Map();
 
-    // iterate all shapes and capture fill attribute or computed fill
     svg.querySelectorAll('*').forEach(el=>{
-      // ignore defs, metadata, namedview, etc.
-      if(el.tagName && ['defs','metadata','sodipodi:namedview','sodipodi:namedview','style','script'].includes(el.tagName.toLowerCase())) return;
+      // skip defs, metadata, etc.
+      const tag = el.tagName && el.tagName.toLowerCase();
+      if(['defs','metadata','sodipodi:namedview','style','script'].includes(tag)) return;
 
-      // prefer attribute 'fill' if present
       let fill = el.getAttribute && el.getAttribute('fill');
-      // fallback to computed style
       if(!fill || fill === 'none'){
-        try {
+        try{
           const cs = window.getComputedStyle(el);
           fill = cs && cs.fill;
-        } catch(e) { /* ignore */ }
+        }catch(e){}
       }
       if(!fill || fill === 'none') return;
 
@@ -329,28 +339,22 @@
       map.get(key).push(el);
     });
 
-    // build up to 4 zone objects
     const entries = Array.from(map.entries()).slice(0,4);
     state.zones = entries.map(([hex, els], idx) => ({
       id: idx+1,
-      hex: hex,
-      els: els,
-      pickerEl: null,
-      copyBtnEl: null
+      hex,
+      els,
+      pickerEl: null
     }));
   }
 
-  /* ---------- Build per-zone pickers UI ---------- */
+  /* ---------- Build per‑zone pickers (now inserted under the SVG) ---------- */
   function buildPickers(){
     const row = document.getElementById('pickersRow');
     row.innerHTML = '';
+
     if(!state.zones.length){
-      // show a friendly empty state
-      const emptyCard = document.createElement('div');
-      emptyCard.className = 'picker';
-      emptyCard.style.justifyContent = 'center';
-      emptyCard.innerHTML = '<div class="small" style="color:var(--sub)">No non-black fills detected.</div>';
-      row.appendChild(emptyCard);
+      row.innerHTML = '<div class="small" style="color:var(--sub)">No non‑black fills detected.</div>';
       return;
     }
 
@@ -358,56 +362,52 @@
       const wrap = document.createElement('div');
       wrap.className = 'picker';
 
+      const label = document.createElement('label');
+      label.textContent = 'Zone '+z.id;
+
       const input = document.createElement('input');
       input.type = 'color';
       input.value = z.hex;
-      input.title = 'Zone ' + z.id + ' color';
-
-      const label = document.createElement('label');
-      label.textContent = 'Zone ' + z.id;
+      input.title = 'Zone '+z.id+' colour';
 
       const hexSpan = document.createElement('div');
       hexSpan.className = 'hex';
       hexSpan.textContent = z.hex;
 
-      const copyTiny = document.createElement('button');
-      copyTiny.className = 'copyTiny';
-      copyTiny.title = 'Copy this hex';
-      copyTiny.textContent = 'Copy';
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copyTiny';
+      copyBtn.title = 'Copy this hex';
+      copyBtn.textContent = 'Copy';
 
-      // layout: label, input, hex, copy
+      // Assemble
       wrap.appendChild(label);
       wrap.appendChild(input);
       wrap.appendChild(hexSpan);
-      wrap.appendChild(copyTiny);
+      wrap.appendChild(copyBtn);
       row.appendChild(wrap);
 
-      // wire events
+      // Event listeners
       input.addEventListener('input', ()=>{
         z.hex = input.value;
         hexSpan.textContent = z.hex;
-        z.els.forEach(el => {
-  el.setAttribute('fill', z.hex);
-  if(el.style) el.style.fill = z.hex;
-});
+        z.els.forEach(el=>el.setAttribute('fill', z.hex));
         renderOutput();
       });
 
-      copyTiny.addEventListener('click', ()=>{
-        navigator.clipboard && navigator.clipboard.writeText(z.hex).then(()=> showToast('Hex copied: ' + z.hex));
+      copyBtn.addEventListener('click', ()=>{
+        navigator.clipboard && navigator.clipboard.writeText(z.hex)
+          .then(()=>showToast('Hex copied: '+z.hex));
       });
 
       z.pickerEl = input;
-      z.copyBtnEl = copyTiny;
     });
 
-    // fill placeholders if fewer than 4 zones so layout doesn't collapse
+    // placeholders to keep layout tidy when <4 zones
     const placeholders = Math.max(0, 4 - state.zones.length);
     for(let i=0;i<placeholders;i++){
       const ghost = document.createElement('div');
       ghost.className = 'picker';
       ghost.style.opacity = '0.45';
-      ghost.style.justifyContent = 'center';
       ghost.innerHTML = '<div class="small" style="color:var(--sub)">Unused</div>';
       row.appendChild(ghost);
     }
@@ -415,31 +415,21 @@
 
   /* ---------- Render CMYK output (one line per zone) ---------- */
   function renderOutput(){
-  const out = document.getElementById('outputBox');
-  if(!out) return;
-
-  const lines = state.zones.map(z=>{
-    return `Zone ${z.id}: ${z.hex.toUpperCase()}`;
-  });
-
-  out.textContent = lines.join('\n');
-}
-
-  /* ---------- Apply global color to zone index ---------- */
-  function applyColour(zoneIndex, hex){
-    if(!state.zones[zoneIndex]) return;
-    const z = state.zones[zoneIndex];
-    z.hex = hex;
-    z.els.forEach(el => el.setAttribute('fill', hex));
-    if(z.pickerEl) z.pickerEl.value = hex;
-    renderOutput();
+    const out = document.getElementById('outputBox');
+    if(!out) return;
+    const lines = state.zones.map(z=>{
+      const rgb = parseColorToRgb(z.hex);
+      const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+      return `Zone ${z.id}: C${cmyk.c} M${cmyk.m} Y${cmyk.y} K${cmyk.k}`;
+    });
+    out.textContent = lines.join('\n');
   }
 
-  /* ---------- Clipboard + toast ---------- */
+  /* ---------- Clipboard & toast helpers ---------- */
   function copyToClipboard(){
     const txt = document.getElementById('outputBox').textContent || '';
-    if(!navigator.clipboard){ showToast('Clipboard not available'); return; }
-    navigator.clipboard.writeText(txt).then(()=> showToast('Copied CMYK to clipboard'));
+    if(!navigator.clipboard){ showToast('Clipboard unavailable'); return; }
+    navigator.clipboard.writeText(txt).then(()=>showToast('CMYK copied'));
   }
 
   function showToast(msg){
@@ -448,19 +438,17 @@
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(t._hideTimer);
-    t._hideTimer = setTimeout(()=> t.classList.remove('show'), 1600);
+    t._hideTimer = setTimeout(()=>t.classList.remove('show'),1600);
   }
 
-  /* ---------- Init ---------- */
+  /* ---------- Initialise ---------- */
   function init(){
     detectZones();
     buildPickers();
     renderOutput();
 
-    // copy button copies CMYK block
-    const copyBtn = document.getElementById('copyBtn');
-    if(copyBtn) copyBtn.addEventListener('click', copyToClipboard);
-
+    document.getElementById('copyBtn')
+      .addEventListener('click', copyToClipboard);
   }
 
   window.addEventListener('DOMContentLoaded', init);
