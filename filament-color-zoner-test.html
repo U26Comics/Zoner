@@ -7,8 +7,8 @@
   <style>
     :root {
   --bg: #000000;
-  --card: #111111;
-  --muted: #222222;
+  --card: #000000;
+  --muted: #000000;
   --text: #04BD00;
   --sub: #228B22;
   --accent: #04BD00;
@@ -50,9 +50,9 @@ body {
     @media(max-width:920px){ .content{grid-template-columns:1fr; } }
 
     .card{
-      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px;
-      box-shadow:0 8px 24px rgba(0,0,0,.35);min-height:0;
+      background:linear-gradient(180deg,rgba(0, 0, 0, 0.02),rgba(255,255,255,.01));
+      border:1px solid rgba(0, 0, 0, 0.05);border-radius:12px;padding:12px;
+      box-shadow:0 8px 24px rgba(0, 0, 0, 0.35);min-height:0;
     }
 
     .preview {
@@ -62,8 +62,14 @@ body {
   padding: 18px;
   overflow: visible;  /* so SVG isn’t cut off */
 }
-    #svgHost, #svgHost svg { width:100%; height:auto; display:block; margin:0 auto; max-width:760px; }
-    #svgHost svg { background:#0e0e12; border-radius:12px; }
+   #svgHost, #svgHost svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  max-width: 760px;
+}
+    #svgHost svg { background:#000000; border-radius:12px; }
 
    .controls {
   display: flex;
@@ -94,7 +100,7 @@ body {
 
     .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   button {
-  background:#111111;
+  background:#000000;
   color:var(--text);
   border:1px solid #04BD00;
 }
@@ -148,7 +154,8 @@ button.primary {
 <svg id="svg1"
    width="210mm"
    height="297mm"
-viewBox="60 120 60 40"
+viewBox="0 0 210 297"
+preserveAspectRatio="xMidYMid meet"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -252,7 +259,7 @@ viewBox="60 120 60 40"
         <div class="card group">
           <div class="btns" style="align-items:center;">
             <div style="flex:1"></div>
-
+<div class="controls" id="pickersRow"></div>
             <button class="primary" id="copyBtn">Copy Color Codes</button>
           </div>
 
