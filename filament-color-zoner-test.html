@@ -33,7 +33,11 @@
       -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;
     }
 
-    .content{display:grid;grid-template-columns:1fr 360px;gap:14px;align-items:start;min-height:0;}
+    .content {
+  display: block; /* stack children vertically */
+  gap: 14px;
+  min-height: 0;
+}
     @media(max-width:920px){ .content{grid-template-columns:1fr; } }
 
     .card{
@@ -48,7 +52,10 @@
     #svgHost, #svgHost svg { width:100%; height:auto; display:block; margin:0 auto; max-width:760px; }
     #svgHost svg { background:#0e0e12; border-radius:12px; }
 
-    .controls{display:grid;grid-auto-rows:auto;gap:12px;}
+    .controls {
+  max-width:760px;
+  margin: 12px auto;
+}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
     @media(max-width:720px){.row{grid-template-columns:1fr;}}
 
