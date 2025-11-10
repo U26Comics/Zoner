@@ -4,8 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Filament Preview – CMYK Zoner</title>
-  <style>
-    :root {
+<style>
+/* ────────────────────────────────────────────────
+   MATRIX / TRON THEME — Sixtyfour Font + Neon Lines
+   ──────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Sixtyfour&display=swap');
+
+:root {
   --bg: #000000;
   --card: #000000;
   --muted: #000000;
@@ -15,129 +21,235 @@
   --accent-2: #00FF00;
 }
 
-    html,body{
-      margin:0;padding:0;background:var(--bg);color:var(--text);
-      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      height:100%;
-    }
+/* ────────────────────────────────────────────────
+   Base
+   ──────────────────────────────────────────────── */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sixtyfour', monospace;  /* ← new font */
+  height: 100%;
+  text-shadow: 0 0 4px #04BD00, 0 0 8px #04BD00; /* subtle matrix glow */
+}
+
 body {
-  background-color: #000;      /* black background */
-  color: #04BD00;              /* matrix-green text */
+  background-color: #000;
+  color: #04BD00;
 }
 
-#svg1 path {
-  fill: #04BD00;               /* default green for shapes */
+/* ────────────────────────────────────────────────
+   SVG styling — Tron line width + neon glow
+   ──────────────────────────────────────────────── */
+#svg1 path,
+#svgHost svg path {
+  fill: none;                 /* or keep fill if desired */
   stroke: #04BD00;
+  stroke-width: 2.5px;        /* ← thicker lines for Tron effect */
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px #04BD00);
 }
 
-    .wrapper{
-      max-width:1200px;margin:18px auto;height:600px;box-sizing:border-box;display:grid;
-      grid-template-rows:auto 1fr auto;gap:12px;padding:12px;
-    }
+#svg1 rect,
+#svg1 circle,
+#svg1 polygon,
+#svgHost svg rect,
+#svgHost svg circle,
+#svgHost svg polygon {
+  stroke: #04BD00;
+  stroke-width: 2.5px;
+  fill: none;
+  filter: drop-shadow(0 0 6px #04BD00);
+}
 
-    .header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-    .title{font-weight:700;font-size:16px;letter-spacing:.2px;}
-    .badge{
-      background:linear-gradient(135deg,var(--accent),var(--accent-2));
-      -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;
-    }
+/* Optional: make certain shapes glow even more */
+#svgHost svg g {
+  filter: drop-shadow(0 0 10px #00FF00);
+}
 
-   .content {
+/* ────────────────────────────────────────────────
+   Layout + UI (same as before)
+   ──────────────────────────────────────────────── */
+.wrapper {
+  max-width: 1200px;
+  margin: 18px auto;
+  height: 600px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  padding: 12px;
+}
+
+.header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.title { font-weight: 700; font-size: 16px; letter-spacing: .2px; }
+.badge {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+.content {
   display: flex;
-  flex-direction: column;  /* stack preview + controls vertically */
+  flex-direction: column;
   gap: 14px;
 }
-    @media(max-width:920px){ .content{grid-template-columns:1fr; } }
+@media(max-width:920px){ .content{grid-template-columns:1fr;} }
 
-    .card{
-      background:linear-gradient(180deg,rgba(0, 0, 0, 0.02),rgba(255,255,255,.01));
-      border:1px solid rgba(0, 0, 0, 0.05);border-radius:12px;padding:12px;
-      box-shadow:0 8px 24px rgba(0, 0, 0, 0.35);min-height:0;
-    }
+.card {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(255,255,255,.01));
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 0 24px rgba(4,189,0,0.2);
+  min-height: 0;
+}
 
-    .preview {
+.preview {
   display: flex;
-  align-items: column;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   padding: 18px;
-  overflow: visible;  /* so SVG isn’t cut off */
+  overflow: visible;
 }
-   #svgHost, #svgHost svg {
+
+#svgHost, #svgHost svg {
   width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
   max-width: 760px;
 }
-    #svgHost svg { background:#000000; border-radius:12px; }
+#svgHost svg {
+  background: #000000;
+  border-radius: 12px;
+}
 
-   .controls {
+.controls {
   display: flex;
   gap: 8px;
-  margin-top: 12px; /* spacing below SVG */
+  margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    @media(max-width:720px){.row{grid-template-columns:1fr;}}
 
-    .group{display:grid;gap:10px;}
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media(max-width:720px){ .row{grid-template-columns:1fr;} }
 
-    .picker{
-      display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--card);border:1px solid var(--muted);
-    }
-    .picker input[type="color"]{
-  width:40px;
-  height:40px;
-  border:1px solid #04BD00;
-  border-radius:8px;
-  padding:0;
-  background:transparent;
-  cursor:pointer;
-    }
-    .picker label{font-size:13px;color:var(--sub);min-width:56px;}
-    .picker .hex { font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Courier New",monospace;color:#e8f0ff;font-size:12px; }
+.group { display: grid; gap: 10px; }
 
-    .small{font-size:12px;color:var(--sub);line-height:1.3;}
+.picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 8px rgba(4,189,0,0.4);
+}
 
-    .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  button {
-  background:#000000;
-  color:var(--text);
-  border:1px solid #04BD00;
+.picker input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #04BD00;
+  border-radius: 8px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 0 6px #04BD00;
+}
+
+.picker label {
+  font-size: 13px;
+  color: var(--accent-2);
+  min-width: 56px;
+}
+.picker .hex {
+  font-family: 'Sixtyfour', monospace;
+  color: #04BD00;
+  font-size: 12px;
+}
+
+.small { font-size: 12px; color: var(--sub); line-height: 1.3; }
+
+.btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button {
+  background: #000000;
+  color: var(--text);
+  border: 1px solid #04BD00;
+  box-shadow: 0 0 8px #04BD00;
+  font-family: 'Sixtyfour', monospace;
 }
 button.primary {
-  background:linear-gradient(135deg,#04BD00,#00FF00);
-  color:#000000;
-  border:none;
+  background: linear-gradient(135deg, #04BD00, #00FF00);
+  color: #000000;
+  border: none;
+  box-shadow: 0 0 10px #00FF00;
 }
-    button:hover{filter:brightness(1.05);}
+button:hover { filter: brightness(1.2); }
 
-    .output{
-      background:var(--card);border:1px solid var(--muted);border-radius:12px;
-      padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Courier New",monospace;
-      font-size:12px;white-space:pre-wrap;color:#e8f0ff;max-height:160px;overflow:auto;
-    }
+.output {
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 10px;
+  font-family: 'Sixtyfour', monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  color: #04BD00;
+  max-height: 160px;
+  overflow: auto;
+  text-shadow: 0 0 4px #04BD00;
+}
 
-    .footer{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--sub);}
-
-    .toast{
-      position:fixed;bottom:14px;right:14px;background:#1c693f;color:#ecfff4;
-      padding:10px 12px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.3);
-      opacity:0;transform:translateY(8px);transition:all 220ms ease;
-      pointer-events:none;z-index:9999;
-    }
-    .toast.show{opacity:1;transform:translateY(0);}
-
-    .copyTiny{
-      background:transparent;border:1px solid rgba(255,255,255,.06);padding:6px;border-radius:8px;color:var(--sub);cursor:pointer;
-    }
-    .svg-container {
+.footer {
   display: flex;
-  flex-direction: column; /* stack SVG on top, controls below */
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--sub);
+}
+
+.toast {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  background: #1c693f;
+  color: #ecfff4;
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #04BD00;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 220ms ease;
+  pointer-events: none;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+.copyTiny {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.06);
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--sub);
+  cursor: pointer;
+}
+
+.svg-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
 }
-
-  </style>
+</style>
 </head>
 <body>
   <div class="wrapper">
